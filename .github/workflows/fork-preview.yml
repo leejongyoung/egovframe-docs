@@ -1,0 +1,85 @@
+name: Fork Hugo preview
+
+on:
+  pull_request:
+    branches: [work]
+  push:
+    branches: [work]
+
+concurrency:
+  group: fork-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'leejongyoung/egovframe-docs'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out Hugo source
+        uses: actions/checkout@v4
+        with:
+          ref: hugo-project
+          path: site
+          submodules: recursive
+          persist-credentials: false
+      - name: Check out documentation
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          path: docs
+          persist-credentials: false
+      - name: Assemble fork preview
+        run: python3 docs/scripts/prepare_fork_site.py docs site
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.139.0'
+          extended: true
+      - name: Build site
+        run: hugo --source site --destination "${{ github.workspace }}/public" --minify
+      - name: Save preview for PR review and publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: fork-preview-html
+          path: public
+      - name: Prepare GitHub Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  update-gh-pages:
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download generated site
+        uses: actions/download-artifact@v4
+        with:
+          name: fork-preview-html
+          path: public
+      - name: Update fork gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+
+  deploy:
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push'
+    needs: [build, update-gh-pages]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy fork GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4
