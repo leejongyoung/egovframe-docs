@@ -49,10 +49,16 @@ against `eGovFramework/egovframe-docs` directly from a throwaway branch.
    builds the site and uploads a downloadable HTML preview artifact on every
    push/PR to either integration branch. Use this step for agent review,
    human review, or both, before anything goes near upstream.
-3. Once merged into `work`/`work-hugo-project` and you're satisfied, cut the
-   upstream submission with the script below. It only runs when you choose
-   to run it — nothing in this repo opens PRs against the upstream repo
-   automatically.
+3. **Default cadence: batch, don't submit after every single fork PR.** Let
+   several fork-side PRs land on `work`/`work-hugo-project` first, then cut
+   *one* upstream submission covering all of them. Submitting upstream
+   immediately after each individual fork PR merge (as was done once for
+   PRs [#1149](https://github.com/eGovFramework/egovframe-docs/pull/1149)
+   and [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150))
+   is the exception, not the rule — upstream reviewers deal with one
+   consolidated PR per batch, not a stream of small ones. Either way, the
+   script below only runs when a human chooses to run it — nothing in this
+   repo opens PRs against the upstream repo automatically.
 
 ### Submitting to upstream
 
@@ -102,7 +108,7 @@ untouched. **If you add new fork-only files, add them to `DENYLIST` first.**
 
 Renders the current checkout (including uncommitted changes) at
 `http://127.0.0.1:8888/`, using the Hugo layout from `origin/hugo-project`
-and the pinned Hugo **0.139.0** (extended) binary — match this version
+and the pinned Hugo **0.167.0** (extended) binary — match this version
 exactly when testing locally; a different Hugo version is not a valid test
 of what CI will do. `scripts/prepare_fork_site.py` is what rewrites
 `hugo.toml`'s baseURL/repo links from the upstream site to
@@ -118,9 +124,17 @@ There's no CI step on this fork that actually builds the full site with
 real content and diffs it — do this manually:
 
 ```sh
-# download the exact pinned version, don't use whatever `hugo` is on PATH
-gh release download v0.139.0 --repo gohugoio/hugo \
-  --pattern "hugo_extended_0.139.0_<platform>.tar.gz"
+# Linux/CI-matching binary: download the exact pinned version, don't use
+# whatever `hugo` happens to be on PATH.
+gh release download v0.167.0 --repo gohugoio/hugo \
+  --pattern "hugo_extended_0.167.0_Linux-64bit.tar.gz"
+
+# macOS: recent Hugo releases only ship a .pkg installer for darwin, not a
+# tarball. `brew install hugo` is the simplest way to get the matching
+# version locally (Homebrew's hugo formula tracks latest stable) - just
+# confirm with `hugo version` that it matches the pin before trusting a
+# diff.
+brew install hugo && hugo version
 ```
 
 Then build with real `main` content copied into `hugo-project`'s `content/`
@@ -144,18 +158,28 @@ were verified (708/708 pages, only the intended footer-year line differed).
   output). This is a pre-existing upstream bug unrelated to anything this
   fork has changed — don't assume you broke it if you see it, and don't try
   to "fix" it incidentally as part of an unrelated change.
-- **`mermaid.min.js` is vendored with no `package.json`.** The bundle is
-  esbuild-minified with no visible version anywhere except a buried
-  `version:"11.15.0"` string inside the obfuscated source (latest upstream
-  mermaid is newer — check `gh api repos/mermaid-js/mermaid/tags` before
-  assuming 11.15.0 is still current). A one-line header comment recording
-  this was added in PR #1149; keep it updated if you ever actually bump the
-  bundle.
-- **The pinned Hugo version (`0.139.0`) is tracked as stale** (fork issue
-  [#6](https://github.com/leejongyoung/egovframe-docs/issues/6) — latest at
-  last check was `0.167.0`, ~83 releases newer). Don't bump it casually; it
-  needs the same before/after full-site-diff verification described above,
-  and the fix belongs on the content track (see "Upstream rules" above).
+- **`mermaid.min.js` is vendored with no `package.json`.** It's mermaid's
+  own official `dist/mermaid.min.js` npm build (confirmed by the matching
+  esbuild wrapper shape), just copied in without any version marker.
+  Currently `12.1.0` (bumped from a buried `version:"11.15.0"` string found
+  inside the obfuscated 11.x source) — check
+  `gh api repos/mermaid-js/mermaid/tags` before assuming this is still
+  current. The header comment records the version; keep it updated if you
+  bump the bundle again, and re-verify rendering the same way PR #1149 did
+  (Playwright + real Chrome against every diagram type actually used in
+  `main`'s content, not just a build-succeeds check — mermaid renders
+  client-side, so a clean Hugo build proves nothing about whether diagrams
+  still draw correctly).
+- **The Hugo version pin was bumped `0.139.0` → `0.167.0`** (fork issue
+  [#6](https://github.com/leejongyoung/egovframe-docs/issues/6), upstream PR
+  [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150)). Don't
+  bump it again casually; it needs the same before/after full-site-diff
+  verification described above. 0.167.0 also surfaces three new deprecation
+  warnings that only matter for `hugo-project` (its `hugo.toml`'s
+  `languageCode` key, and `.Language.LanguageCode`/`.Language.LanguageDirection`
+  in templates, plus an "unrecognized render hook template" warning for an
+  already-dead template) — tracked separately as a `hugo-project`/
+  `work-hugo-project` fix, not a content-track one.
 - **`markdown-lint.yml` and `link-check.yml` on `main` are entirely commented
   out** — they do nothing. `scripts/docs_lint.py` exists but is not wired
   into any CI workflow either. Don't assume either one is actually linting
