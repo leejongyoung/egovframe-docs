@@ -10,14 +10,15 @@ set -euo pipefail
 #   work              -> main          (문서/콘텐츠 트랙)
 #   work-hugo-project -> hugo-project  (Hugo 테마 트랙)
 #
-# PR 제목/본문은 지정하지 않는다 — gh pr create가 대화형으로 물어본다.
+# 추가 인수는 gh pr create에 전달한다. 생략하면 대화형으로 제목/본문을 묻는다.
 #
-# 사용법: scripts/open_upstream_pr.sh <source-branch> <upstream-base-branch>
+# 사용법: scripts/open_upstream_pr.sh <source-branch> <upstream-base-branch> [gh-pr-create-options...]
 # 예시:   scripts/open_upstream_pr.sh work main
 #         scripts/open_upstream_pr.sh work-hugo-project hugo-project
+#         scripts/open_upstream_pr.sh work main --title "..." --body-file /tmp/pr-body.md
 
-if [ $# -ne 2 ]; then
-  echo "usage: $0 <source-branch> <upstream-base-branch>" >&2
+if [ $# -lt 2 ]; then
+  echo "usage: $0 <source-branch> <upstream-base-branch> [gh-pr-create-options...]" >&2
   echo "  예: $0 work main" >&2
   echo "      $0 work-hugo-project hugo-project" >&2
   exit 1
@@ -25,6 +26,7 @@ fi
 
 SRC="$1"
 BASE="$2"
+shift 2
 UPSTREAM_REPO="eGovFramework/egovframe-docs"
 CLEAN_BRANCH="upstream-submit/$(date +%Y%m%d%H%M%S)"
 
@@ -68,7 +70,7 @@ fi
 
 git push -u origin "$CLEAN_BRANCH"
 
-gh pr create --repo "$UPSTREAM_REPO" --base "$BASE" --head "leejongyoung:$CLEAN_BRANCH"
+gh pr create --repo "$UPSTREAM_REPO" --base "$BASE" --head "leejongyoung:$CLEAN_BRANCH" "$@"
 
 echo
 echo "원본 브랜치($SRC)는 그대로 유지됩니다. 임시 제출 브랜치: $CLEAN_BRANCH"
