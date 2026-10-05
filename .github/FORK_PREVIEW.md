@@ -9,10 +9,10 @@ track specifically.
 `.github/workflows/sync-upstream-mirrors.yml` (daily + manual
 `workflow_dispatch`, fast-forward only). Work on `work` instead, and review
 changes via the **Fork Hugo preview** workflow, which builds an HTML
-artifact on every push/PR to `work`. Pushes to `work` additionally publish
-to this fork's own `gh-pages` branch and GitHub Pages at
-<https://leejongyoung.github.io/egovframe-docs/> — these steps only ever
-touch branches and Pages belonging to this fork.
+artifact on every push/PR to `work`. The live GitHub Pages site at
+<https://leejongyoung.github.io/egovframe-docs/> is published on pushes to
+`work-hugo-project`, using that branch's theme and the stable `main`
+documentation. The `gh-pages` output branch belongs only to this fork.
 
 For an immediate local preview, install Hugo 0.167.0 (extended) and run:
 
