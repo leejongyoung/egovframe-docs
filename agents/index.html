@@ -35,14 +35,24 @@ several fork-side PRs land on <code>work</code>/<code>work-hugo-project</code> f
 <em>one</em> upstream submission covering all of them. Submitting upstream
 immediately after each individual fork PR merge (as was done once for
 PRs
-<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1149 target=_blank rel="noopener noreferrer" class=externalLink>#1149<i class="svg-icon ico-go"></i></a>
+<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1151 target=_blank rel="noopener noreferrer" class=externalLink>#1151<i class="svg-icon ico-go"></i></a>
 and
 <a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1150 target=_blank rel="noopener noreferrer" class=externalLink>#1150<i class="svg-icon ico-go"></i></a>
 )
 is the exception, not the rule — upstream reviewers deal with one
 consolidated PR per batch, not a stream of small ones. Either way, the
 script below only runs when a human chooses to run it — nothing in this
-repo opens PRs against the upstream repo automatically.</li></ol><h3 class=sec-tit id=submitting-to-upstream>Submitting to upstream</h3><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>scripts/open_upstream_pr.sh work main                    <span style=color:#57606a># content track</span>
+repo opens PRs against the upstream repo automatically.</li><li><strong>If a new, unrelated fix shows up while an upstream PR is still open,
+prefer pushing another commit to the same branch over opening a second
+PR</strong> — that&rsquo;s normal and keeps review in one place (the branch tracked
+by #1151 picked up both the mermaid date fix and the dead-template
+removal this way). Close the old upstream PR and open a fresh one
+instead only when the description has already been edited enough times
+that a reviewer landing on it cold would be confused about what it
+currently contains — a clean restart beats a PR body stitched together
+from several rounds of edits. When you do this, always close the old one
+with a comment pointing at the replacement (don&rsquo;t just abandon it), and
+update every fork issue/PR that linked the old number.</li></ol><h3 class=sec-tit id=submitting-to-upstream>Submitting to upstream</h3><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>scripts/open_upstream_pr.sh work main                    <span style=color:#57606a># content track</span>
 </span></span><span style=display:flex><span>scripts/open_upstream_pr.sh work-hugo-project hugo-project <span style=color:#57606a># theme track</span>
 </span></span></code></pre></div><p>This creates a disposable <code>upstream-submit/&lt;timestamp></code> branch from the given
 source, <strong>strips the fork-only tooling denylist</strong> (see the <code>DENYLIST</code> array
@@ -95,14 +105,27 @@ real content and diffs it — do this manually:</p><div class=highlight><pre tab
 the output <code>public/</code> tree against a baseline build from before your change.
 A change that touches the theme should produce a <strong>page-by-page diff you can
 fully explain</strong> — if pages differ in ways you didn&rsquo;t intend, stop and
-investigate before opening a PR. This is how the three <code>hugo-project</code> fixes
-in PR
-<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1149 target=_blank rel="noopener noreferrer" class=externalLink>#1149<i class="svg-icon ico-go"></i></a>
-were verified (708/708 pages, only the intended footer-year line differed).</p></div><div class="conts-wrap section-link" id=section_06><h2 class=sec-tit id=known-gotchas-so-you-dont-rediscover-them>Known gotchas (so you don&rsquo;t rediscover them)</h2><ul><li><strong><code>krds-theme</code> is not really a git submodule.</strong> <code>.gitmodules</code> used to
+investigate before opening a PR. This is how the <code>hugo-project</code> fixes in PR
+<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1151 target=_blank rel="noopener noreferrer" class=externalLink>#1151<i class="svg-icon ico-go"></i></a>
+were
+verified (708/708 pages matched except the specific intended lines).</p><h3 class=sec-tit id=check-cross-pr-version-dependencies-not-just-conflicts>Check cross-PR version dependencies, not just conflicts</h3><p>Two PRs touching different branches can&rsquo;t git-conflict, but one can still
+<em>require</em> the other. Before shipping a fix, ask whether it depends on a
+specific tool/Hugo/library version being live yet — not just whether it
+clashes with another open PR&rsquo;s files. This bit us for real: switching
+<code>hugo-project</code> to <code>.Language.Locale</code>/<code>.Language.Direction</code> (for issue #11)
+builds fine under Hugo 0.167.0 but is a <strong>hard build failure</strong> under the
+0.139.0 still pinned upstream (<code>can't evaluate field Locale in type *langs.Language</code>) — i.e. it only works <em>after</em> PR #1150 (the Hugo version
+bump) merges, not independently. The fix: split the change, ship only the
+version-independent part now (deleting the unrelated dead
+<code>td-render-heading.html</code> template was safe under both versions - verified
+by literally building with both binaries), and leave the version-dependent
+part on the issue as explicitly blocked until the dependency lands. When in
+doubt, build with <em>both</em> the old and new pinned versions of whatever
+you&rsquo;re bumping, not just the new one.</p></div><div class="conts-wrap section-link" id=section_06><h2 class=sec-tit id=known-gotchas-so-you-dont-rediscover-them>Known gotchas (so you don&rsquo;t rediscover them)</h2><ul><li><strong><code>krds-theme</code> is not really a git submodule.</strong> <code>.gitmodules</code> used to
 declare it as one, but the tree entry was always a plain directory (mode
 <code>040000</code>, not a commit gitlink <code>160000</code>) on both the fork and upstream —
 <code>git submodule update --init</code> was a silent no-op. The stale <code>.gitmodules</code>
-was removed in PR #1149; the theme is just a vendored directory.</li><li><strong>The merged <code>custom.js</code>&rsquo;s SRI <code>integrity</code> attribute is empty</strong> (see
+was removed in PR #1151; the theme is just a vendored directory.</li><li><strong>The merged <code>custom.js</code>&rsquo;s SRI <code>integrity</code> attribute is empty</strong> (see
 <code>themes/krds-theme/layouts/partials/head/js.html</code>, the <code>resources.Concat</code>
 output). This is a pre-existing upstream bug unrelated to anything this
 fork has changed — don&rsquo;t assume you broke it if you see it, and don&rsquo;t try
@@ -112,9 +135,10 @@ esbuild wrapper shape), just copied in without any version marker.
 Currently <code>12.1.0</code> (bumped from a buried <code>version:"11.15.0"</code> string found
 inside the obfuscated 11.x source) — check
 <code>gh api repos/mermaid-js/mermaid/tags</code> before assuming this is still
-current. The header comment records the version; keep it updated if you
-bump the bundle again, and re-verify rendering the same way PR #1149 did
-(Playwright + real Chrome against every diagram type actually used in
+current. The header comment records the version and the date it was
+fetched; keep it updated if you bump the bundle again, and re-verify
+rendering the same way PR #1151 did (Playwright + real Chrome against
+every diagram type actually used in
 <code>main</code>&rsquo;s content, not just a build-succeeds check — mermaid renders
 client-side, so a clean Hugo build proves nothing about whether diagrams
 still draw correctly).</li><li><strong>The Hugo version pin was bumped <code>0.139.0</code> → <code>0.167.0</code></strong> (fork issue
@@ -147,14 +171,33 @@ existing milestone if it fits, and add it to the GitHub Project
 </span></span></code></pre></div><p>Every issue should describe a finding you&rsquo;ve actually verified (grep output,
 a build log, a diff) — not a suspicion. If investigation shows an issue
 can&rsquo;t actually be fixed in the PR scope you assumed (as happened with issue
-#6 above), say so in the issue/PR rather than forcing it in anyway.</p></div><div class="conts-wrap section-link" id=section_08><h2 class=sec-tit id=spec-driven-workflow-lightweight-no-extra-tooling>Spec-driven workflow (lightweight, no extra tooling)</h2><p>This fork doesn&rsquo;t install
+#6 above), say so in the issue/PR rather than forcing it in anyway.</p><h3 class=sec-tit id=checkbox-hygiene-and-auto-closing>Checkbox hygiene and auto-closing</h3><p>Only check a <code>- [ ]</code> box in an issue body when a specific commit actually
+resolved it — not when you&rsquo;ve merely investigated it. An issue&rsquo;s checklist
+is a completion record, not a scratchpad. When a fix lands, comment on the
+issue with the <strong>full URL</strong> of the upstream PR (e.g.
+<code>https://github.com/eGovFramework/egovframe-docs/pull/1151</code>) — not a bare
+<code>#1151</code> — and check the boxes it actually resolves, leaving any unresolved
+ones unchecked (see issue #11: #1151 only resolved one of its three items,
+so only that one is checked).</p><p><code>.github/workflows/close-resolved-issues.yml</code> (daily + <code>workflow_dispatch</code>,
+runs <code>scripts/close_resolved_issues.py</code>) auto-closes an issue once <strong>both</strong>
+hold: every checkbox in its body is checked (or it has none at all), and
+every upstream PR URL mentioned in its body/comments is <code>MERGED</code> (a PR
+that&rsquo;s merely <code>CLOSED</code> — e.g. #1149, superseded by #1151 — is ignored
+rather than blocking the issue forever). This only writes to this fork&rsquo;s
+own issues, so the default <code>GITHUB_TOKEN</code> is enough — there&rsquo;s no cross-repo
+permission problem here, unlike the &ldquo;does merging an upstream PR auto-close
+a fork issue via <code>Closes #N</code>&rdquo; question this was built to answer (no: GitHub
+keyword auto-close only works within a single repo, and even the
+<code>owner/repo#N</code> cross-repo syntax requires the person merging the PR to have
+write access to the <em>other</em> repo, which an upstream maintainer doesn&rsquo;t have
+to this fork).</p></div><div class="conts-wrap section-link" id=section_08><h2 class=sec-tit id=spec-driven-workflow-lightweight-no-extra-tooling>Spec-driven workflow (lightweight, no extra tooling)</h2><p>This fork doesn&rsquo;t install
 <a class="krds-btn medium text" href=https://github.com/github/spec-kit target=_blank rel="noopener noreferrer" class=externalLink>github/spec-kit<i class="svg-icon ico-go"></i></a>
 or any <code>.specify/</code> scaffolding — just follow its shape manually for any
 nontrivial change:</p><ol><li><strong>Specify</strong> — before touching files, write (or confirm) a GitHub issue
 with a concrete, falsifiable problem statement, not a vague &ldquo;improve X&rdquo;.</li><li><strong>Plan</strong> — note how you&rsquo;ll verify the fix <em>before</em> implementing it (which
 command, which diff, which build). Decide this before writing code so you
 don&rsquo;t rationalize a weak verification after the fact.</li><li><strong>Implement</strong> — make the smallest change that satisfies the plan.</li><li><strong>Verify & record</strong> — actually run the verification from step 2, and put
-the result in the PR description (see PR #1149&rsquo;s &ldquo;검증&rdquo; section for the
+the result in the PR description (see PR #1151&rsquo;s &ldquo;검증&rdquo; section for the
 expected level of detail: exact command, exact before/after comparison).</li></ol><p>If a step reveals the original plan doesn&rsquo;t work (e.g. &ldquo;this needs a
 different base branch,&rdquo; &ldquo;this file doesn&rsquo;t exist where I assumed&rdquo;), stop and
 re-specify rather than forcing the original plan through.</p></div></div></div></div></div><button class="page-top-button krds-tooltip active" type=button data-tooltip="페이지 상단으로 이동" aria-labelledby=tooltip-popover-0aha8scb><i class="svg-icon ico-go-top"></i></button></div></main><footer id=krds-footer><div class=inner><div class=f-logo></div><div class=f-cnt><div class=f-info><ul class=info-cs><li><strong class=strong>대표전화</strong><span class=span>&nbsp; 1566-3598 (070-4448-2678)</span></li><li><strong class=strong>대표문의메일</strong><span class=span>&nbsp; egovframesupport@gmail.com</span></li></ul></div><div class=f-link><div class=link-go><a href=https://www.egovframe.go.kr/ class="krds-btn medium text" target=_blank title="새 창 열림">전자정부 표준프레임워크 <i class="svg-icon ico-go"></i></a>
