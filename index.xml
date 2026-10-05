@@ -1,4 +1,34 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Contribution 전용 페이지 on 표준프레임워크 개발가이드</title><link>https://leejongyoung.github.io/egovframe-docs/</link><description>Recent content in Contribution 전용 페이지 on 표준프레임워크 개발가이드</description><generator>Hugo</generator><language>kr</language><atom:link href="https://leejongyoung.github.io/egovframe-docs/index.xml" rel="self" type="application/rss+xml"/><item><title/><link>https://leejongyoung.github.io/egovframe-docs/docs/directory-structure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://leejongyoung.github.io/egovframe-docs/docs/directory-structure/</guid><description>&lt;h1 id="heading">&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Contribution 전용 페이지 on 표준프레임워크 개발가이드</title><link>https://leejongyoung.github.io/egovframe-docs/</link><description>Recent content in Contribution 전용 페이지 on 표준프레임워크 개발가이드</description><generator>Hugo</generator><language>kr</language><atom:link href="https://leejongyoung.github.io/egovframe-docs/index.xml" rel="self" type="application/rss+xml"/><item><title/><link>https://leejongyoung.github.io/egovframe-docs/agents/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://leejongyoung.github.io/egovframe-docs/agents/</guid><description>&lt;h1 id="agentsmd">AGENTS.md&lt;/h1>
+&lt;p>Instructions for AI coding agents (Claude Code, Codex, Copilot, etc.) working in
+&lt;strong>leejongyoung/egovframe-docs&lt;/strong>, a personal fork of
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;a href="https://github.com/eGovFramework/egovframe-docs" target="_blank" rel="noopener noreferrer" class="externalLink">eGovFramework/egovframe-docs&lt;i class="svg-icon ico-go">&lt;/i>&lt;/a>
+
+
+used to prepare clean contributions back to that upstream repo.&lt;/p>
+&lt;p>This file is fork-only tooling: it must never be sent upstream (see
+&amp;ldquo;Submitting to upstream&amp;rdquo; below). If you are reading this while checked out on
+&lt;code>main&lt;/code> or &lt;code>hugo-project&lt;/code>, something is wrong — those branches must stay
+byte-identical to upstream.&lt;/p>
+&lt;h2 id="mental-model-two-tracks-four-branch-roles">Mental model: two tracks, four branch roles&lt;/h2>
+&lt;p>Upstream has two unrelated histories: &lt;code>main&lt;/code> (Markdown content) and
+&lt;code>hugo-project&lt;/code> (an orphan branch holding the Hugo site generator + the
+&lt;code>krds-theme&lt;/code> theme). This fork mirrors that split and adds one integration
+branch per track:&lt;/p></description></item><item><title/><link>https://leejongyoung.github.io/egovframe-docs/docs/directory-structure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://leejongyoung.github.io/egovframe-docs/docs/directory-structure/</guid><description>&lt;h1 id="heading">&lt;/h1>
 &lt;h2 id="공통컴포넌트-디렉토리-구조">공통컴포넌트 디렉토리 구조&lt;/h2>
 &lt;pre tabindex="0">&lt;code>/common-component 공통컴포넌트
 ├── /intro 개요
