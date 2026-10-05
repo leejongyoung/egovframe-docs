@@ -62,7 +62,22 @@ inside the script — currently <code>AGENTS</code>, <code>.github/FORK_PREVIEW<
 <code>scripts/open_upstream_pr.sh</code>), pushes it, and opens a PR against
 <code>eGovFramework/egovframe-docs</code> with <code>gh pr create</code> (title/body are entered
 interactively). The source branch (<code>work</code>/<code>work-hugo-project</code>) is left
-untouched. <strong>If you add new fork-only files, add them to <code>DENYLIST</code> first.</strong></p></div><div class="conts-wrap section-link" id=section_03><h2 class=sec-tit id=upstream-rules-you-must-not-break>Upstream rules you must not break</h2><ul><li><strong>Never touch the frontmatter of an existing <code></code> file</strong> on the content
+untouched. <strong>If you add new fork-only files, add them to <code>DENYLIST</code> first.</strong></p><p><strong>Always use this script to get the PR head branch — never open an
+upstream PR directly from <code>work</code>, <code>work-hugo-project</code>, or any other branch
+you intend to keep developing on.</strong> An open PR&rsquo;s diff is live: GitHub
+recomputes it from the current head branch on every push, not from a
+snapshot taken when the PR was opened. PR #1150 did this correctly (head
+is a disposable <code>upstream-submit/20261005121218</code>, so later commits to
+<code>work</code> never touched it). PR #1151 didn&rsquo;t — it was opened directly from
+<code>fix/hugo-project-maintenance</code>, which was still being pushed to
+afterwards (a mermaid-header date fix, then the dead-template removal),
+so those commits appeared in the already-open PR automatically. The
+<em>content</em> happened to be fine both times (everything pushed there was
+meant for that PR anyway), but it was only safe by luck, not by design -
+don&rsquo;t rely on that. Once a PR like #1151 exists from a branch you&rsquo;re still
+using for development, stop pushing to that branch; do further work
+through a fresh topic branch and a new <code>open_upstream_pr.sh</code> snapshot
+instead.</p></div><div class="conts-wrap section-link" id=section_03><h2 class=sec-tit id=upstream-rules-you-must-not-break>Upstream rules you must not break</h2><ul><li><strong>Never touch the frontmatter of an existing <code></code> file</strong> on the content
 track. Upstream&rsquo;s <code>merge-on-pr.yaml</code> bot diffs frontmatter blocks (the
 first <code>---</code>…<code>---</code>) on every PR touching <code>main</code>; if it detects a change on
 a <em>modified</em> file (new files are exempt), it blocks auto-merge and comments
