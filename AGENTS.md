@@ -53,12 +53,23 @@ against `eGovFramework/egovframe-docs` directly from a throwaway branch.
    several fork-side PRs land on `work`/`work-hugo-project` first, then cut
    *one* upstream submission covering all of them. Submitting upstream
    immediately after each individual fork PR merge (as was done once for
-   PRs [#1149](https://github.com/eGovFramework/egovframe-docs/pull/1149)
+   PRs [#1151](https://github.com/eGovFramework/egovframe-docs/pull/1151)
    and [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150))
    is the exception, not the rule — upstream reviewers deal with one
    consolidated PR per batch, not a stream of small ones. Either way, the
    script below only runs when a human chooses to run it — nothing in this
    repo opens PRs against the upstream repo automatically.
+4. **If a new, unrelated fix shows up while an upstream PR is still open,
+   prefer pushing another commit to the same branch over opening a second
+   PR** — that's normal and keeps review in one place (the branch tracked
+   by #1151 picked up both the mermaid date fix and the dead-template
+   removal this way). Close the old upstream PR and open a fresh one
+   instead only when the description has already been edited enough times
+   that a reviewer landing on it cold would be confused about what it
+   currently contains — a clean restart beats a PR body stitched together
+   from several rounds of edits. When you do this, always close the old one
+   with a comment pointing at the replacement (don't just abandon it), and
+   update every fork issue/PR that linked the old number.
 
 ### Submitting to upstream
 
@@ -142,9 +153,27 @@ Then build with real `main` content copied into `hugo-project`'s `content/`
 the output `public/` tree against a baseline build from before your change.
 A change that touches the theme should produce a **page-by-page diff you can
 fully explain** — if pages differ in ways you didn't intend, stop and
-investigate before opening a PR. This is how the three `hugo-project` fixes
-in PR [#1149](https://github.com/eGovFramework/egovframe-docs/pull/1149)
-were verified (708/708 pages, only the intended footer-year line differed).
+investigate before opening a PR. This is how the `hugo-project` fixes in PR
+[#1151](https://github.com/eGovFramework/egovframe-docs/pull/1151) were
+verified (708/708 pages matched except the specific intended lines).
+
+### Check cross-PR version dependencies, not just conflicts
+
+Two PRs touching different branches can't git-conflict, but one can still
+*require* the other. Before shipping a fix, ask whether it depends on a
+specific tool/Hugo/library version being live yet — not just whether it
+clashes with another open PR's files. This bit us for real: switching
+`hugo-project` to `.Language.Locale`/`.Language.Direction` (for issue #11)
+builds fine under Hugo 0.167.0 but is a **hard build failure** under the
+0.139.0 still pinned upstream (`can't evaluate field Locale in type
+*langs.Language`) — i.e. it only works *after* PR #1150 (the Hugo version
+bump) merges, not independently. The fix: split the change, ship only the
+version-independent part now (deleting the unrelated dead
+`td-render-heading.html` template was safe under both versions - verified
+by literally building with both binaries), and leave the version-dependent
+part on the issue as explicitly blocked until the dependency lands. When in
+doubt, build with *both* the old and new pinned versions of whatever
+you're bumping, not just the new one.
 
 ## Known gotchas (so you don't rediscover them)
 
@@ -152,7 +181,7 @@ were verified (708/708 pages, only the intended footer-year line differed).
   declare it as one, but the tree entry was always a plain directory (mode
   `040000`, not a commit gitlink `160000`) on both the fork and upstream —
   `git submodule update --init` was a silent no-op. The stale `.gitmodules`
-  was removed in PR #1149; the theme is just a vendored directory.
+  was removed in PR #1151; the theme is just a vendored directory.
 - **The merged `custom.js`'s SRI `integrity` attribute is empty** (see
   `themes/krds-theme/layouts/partials/head/js.html`, the `resources.Concat`
   output). This is a pre-existing upstream bug unrelated to anything this
@@ -164,9 +193,10 @@ were verified (708/708 pages, only the intended footer-year line differed).
   Currently `12.1.0` (bumped from a buried `version:"11.15.0"` string found
   inside the obfuscated 11.x source) — check
   `gh api repos/mermaid-js/mermaid/tags` before assuming this is still
-  current. The header comment records the version; keep it updated if you
-  bump the bundle again, and re-verify rendering the same way PR #1149 did
-  (Playwright + real Chrome against every diagram type actually used in
+  current. The header comment records the version and the date it was
+  fetched; keep it updated if you bump the bundle again, and re-verify
+  rendering the same way PR #1151 did (Playwright + real Chrome against
+  every diagram type actually used in
   `main`'s content, not just a build-succeeds check — mermaid renders
   client-side, so a clean Hugo build proves nothing about whether diagrams
   still draw correctly).
@@ -213,6 +243,31 @@ a build log, a diff) — not a suspicion. If investigation shows an issue
 can't actually be fixed in the PR scope you assumed (as happened with issue
 #6 above), say so in the issue/PR rather than forcing it in anyway.
 
+### Checkbox hygiene and auto-closing
+
+Only check a `- [ ]` box in an issue body when a specific commit actually
+resolved it — not when you've merely investigated it. An issue's checklist
+is a completion record, not a scratchpad. When a fix lands, comment on the
+issue with the **full URL** of the upstream PR (e.g.
+`https://github.com/eGovFramework/egovframe-docs/pull/1151`) — not a bare
+`#1151` — and check the boxes it actually resolves, leaving any unresolved
+ones unchecked (see issue #11: #1151 only resolved one of its three items,
+so only that one is checked).
+
+`.github/workflows/close-resolved-issues.yml` (daily + `workflow_dispatch`,
+runs `scripts/close_resolved_issues.py`) auto-closes an issue once **both**
+hold: every checkbox in its body is checked (or it has none at all), and
+every upstream PR URL mentioned in its body/comments is `MERGED` (a PR
+that's merely `CLOSED` — e.g. #1149, superseded by #1151 — is ignored
+rather than blocking the issue forever). This only writes to this fork's
+own issues, so the default `GITHUB_TOKEN` is enough — there's no cross-repo
+permission problem here, unlike the "does merging an upstream PR auto-close
+a fork issue via `Closes #N`" question this was built to answer (no: GitHub
+keyword auto-close only works within a single repo, and even the
+`owner/repo#N` cross-repo syntax requires the person merging the PR to have
+write access to the *other* repo, which an upstream maintainer doesn't have
+to this fork).
+
 ## Spec-driven workflow (lightweight, no extra tooling)
 
 This fork doesn't install [github/spec-kit](https://github.com/github/spec-kit)
@@ -226,7 +281,7 @@ nontrivial change:
    don't rationalize a weak verification after the fact.
 3. **Implement** — make the smallest change that satisfies the plan.
 4. **Verify & record** — actually run the verification from step 2, and put
-   the result in the PR description (see PR #1149's "검증" section for the
+   the result in the PR description (see PR #1151's "검증" section for the
    expected level of detail: exact command, exact before/after comparison).
 
 If a step reveals the original plan doesn't work (e.g. "this needs a
