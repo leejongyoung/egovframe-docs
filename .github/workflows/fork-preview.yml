@@ -1,0 +1,92 @@
+name: Fork Hugo preview
+
+on:
+  pull_request:
+    branches: [work, work-hugo-project]
+  push:
+    branches: [work, work-hugo-project]
+
+concurrency:
+  group: fork-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'leejongyoung/egovframe-docs'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
+      HEAD_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      # work 트랙(문서/콘텐츠)은 안정적인 hugo-project 테마로 변경된 문서를 미리보고,
+      # work-hugo-project 트랙(테마)은 안정적인 main 문서로 변경된 테마를 미리본다.
+      - name: Check out Hugo source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH == 'work-hugo-project' && env.HEAD_REF || 'hugo-project' }}
+          path: site
+          submodules: recursive
+          persist-credentials: false
+      - name: Check out documentation
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH == 'work-hugo-project' && 'main' || env.HEAD_REF }}
+          path: docs
+          persist-credentials: false
+      - name: Assemble fork preview
+        run: python3 docs/scripts/prepare_fork_site.py docs site
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.139.0'
+          extended: true
+      - name: Build site
+        run: hugo --source site --destination "${{ github.workspace }}/public" --minify
+      - name: Save preview for PR review and publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: fork-preview-html
+          path: public
+      # work-hugo-project에서 진행 중인 테마 실험이 work의 "진짜" 미리보기 사이트를
+      # 덮어쓰지 않도록, GitHub Pages 자동 배포는 work 트랙 push에만 한정한다.
+      - name: Prepare GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref_name == 'work'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  update-gh-pages:
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download generated site
+        uses: actions/download-artifact@v4
+        with:
+          name: fork-preview-html
+          path: public
+      - name: Update fork gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+
+  deploy:
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work'
+    needs: [build, update-gh-pages]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy fork GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4
