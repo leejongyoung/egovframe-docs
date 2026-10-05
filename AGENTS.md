@@ -5,11 +5,11 @@ Instructions for AI coding agents (Claude Code, Codex, Copilot, etc.) working in
 [eGovFramework/egovframe-docs](https://github.com/eGovFramework/egovframe-docs)
 used to prepare clean contributions back to that upstream repo.
 
-As of 2026-10-05, upstream PRs #1150 and #1151 are closed for consolidation.
-Their replacements are still pending. Fork PR #14 has merged the remaining
-Hugo theme fixes into `work-hugo-project`. Submit the `main` Hugo 0.167.0
-pin first; the `hugo-project` locale changes require that pin to be merged
-before they can be merged upstream.
+As of 2026-10-05, upstream PRs #1150 and #1151 are closed and their
+consolidated replacements are open: [#1152](https://github.com/eGovFramework/egovframe-docs/pull/1152)
+targets `main` and [#1153](https://github.com/eGovFramework/egovframe-docs/pull/1153)
+targets `hugo-project`. Merge #1152 first: #1153's locale templates require
+Hugo 0.167.0. PR state can change; check GitHub before relying on this note.
 
 This file is fork-only tooling: it must never be sent upstream (see
 "Submitting to upstream" below). If you are reading this while checked out on
@@ -47,9 +47,11 @@ fails loudly instead of silently force-pushing. **Never commit directly to
 Always land changes on this fork before they go upstream — never open a PR
 against `eGovFramework/egovframe-docs` directly from a throwaway branch.
 
-1. Branch from the relevant mirror:
+1. For upstream-bound changes, branch from the relevant mirror:
    - Content/docs change → branch from `main`.
    - Theme/Hugo change → branch from `hugo-project`.
+   - Fork-only tooling or `AGENTS.md` → branch from the corresponding
+     integration branch; keep it out of upstream submission heads.
 2. Open a PR **against this fork's own integration branch** (`work` or
    `work-hugo-project`). This is the review checkpoint — CI (`fork-preview.yml`)
    builds the site and uploads a downloadable HTML preview artifact on every
@@ -65,17 +67,12 @@ against `eGovFramework/egovframe-docs` directly from a throwaway branch.
    consolidated PR per batch, not a stream of small ones. Either way, the
    script below only runs when a human chooses to run it — nothing in this
    repo opens PRs against the upstream repo automatically.
-4. **If a new, unrelated fix shows up while an upstream PR is still open,
-   prefer pushing another commit to the same branch over opening a second
-   PR** — that's normal and keeps review in one place (the branch tracked
-   by #1151 picked up both the mermaid date fix and the dead-template
-   removal this way). Close the old upstream PR and open a fresh one
-   instead only when the description has already been edited enough times
-   that a reviewer landing on it cold would be confused about what it
-   currently contains — a clean restart beats a PR body stitched together
-   from several rounds of edits. When you do this, always close the old one
-   with a comment pointing at the replacement (don't just abandon it), and
-   update every fork issue/PR that linked the old number.
+4. When more work appears while an upstream PR is open, land it through a
+   separate fork topic PR into the appropriate integration branch. Decide
+   deliberately whether to refresh the existing disposable submission head
+   and update its description, or close it and submit a new consolidated
+   snapshot. Do not develop on the upstream PR head. If replacing a PR,
+   explain the replacement on the old PR and update fork issue/PR links.
 
 ### Submitting to upstream
 
@@ -85,11 +82,13 @@ scripts/open_upstream_pr.sh work-hugo-project hugo-project # theme track
 ```
 
 This creates a disposable `upstream-submit/<timestamp>` branch from the given
-source, **strips the fork-only tooling denylist** (see the `DENYLIST` array
-inside the script), pushes it, and opens a PR against
-`eGovFramework/egovframe-docs` with `gh pr create` (title/body are entered
-interactively). The source branch (`work`/`work-hugo-project`) is left
-untouched. **If you add new fork-only files, add them to `DENYLIST` first.**
+source, **strips the fork-only tooling denylist** (see `DENYLIST` in the
+script), pushes it, and opens a PR against `eGovFramework/egovframe-docs`.
+It accepts additional `gh pr create` options such as `--title`, `--body-file`,
+and `--draft`. The source branch is left untouched. **If you add new
+fork-only files, add them to `DENYLIST` first.** Before submission, compare
+the exact proposed diff against the current upstream base and inspect the
+file list for accidental fork tooling or unrelated changes.
 
 **Always use this script to get the PR head branch — never open an
 upstream PR directly from `work`, `work-hugo-project`, or any other branch
@@ -108,12 +107,13 @@ using for development, stop pushing to that branch; do further work
 through a fresh topic branch and a new `open_upstream_pr.sh` snapshot
 instead.
 
-**Don't rely on memory to catch this again — `.github/workflows/check-upstream-pr-hygiene.yml`**
-(daily + `workflow_dispatch`) lists every open upstream PR authored by
+**`.github/workflows/check-upstream-pr-hygiene.yml` is the backstop.** Its
+daily schedule (and manual dispatch) lists open upstream PRs authored by
 `leejongyoung` and fails if any head branch does not start with
-`upstream-submit/`. It runs from the default `work` branch, so it also
-catches topic branches that do not contain a workflow file. After #1150
-and #1151 were closed, the check passed with zero open upstream PRs.
+`upstream-submit/`. It runs from default branch `work` so it catches topic
+branches that lack the workflow file. A failed run stays a meaningful alert
+until the unsafe PR is closed or resubmitted; do not silence it merely to
+make Actions green. GitHub's failure notification alerts the fork owner.
 
 ## Upstream rules you must not break
 
@@ -160,8 +160,8 @@ still produces downloadable HTML artifacts for PRs and pushes.
 
 ## Verifying a change before opening any PR
 
-There's no CI step on this fork that actually builds the full site with
-real content and diffs it — do this manually:
+Fork CI builds the full site with real content, but does not compare its
+output page by page against a baseline — do that for changes to the site:
 
 ```sh
 # Linux/CI-matching binary: download the exact pinned version, don't use
@@ -169,11 +169,8 @@ real content and diffs it — do this manually:
 gh release download v0.167.0 --repo gohugoio/hugo \
   --pattern "hugo_extended_0.167.0_Linux-64bit.tar.gz"
 
-# macOS: recent Hugo releases only ship a .pkg installer for darwin, not a
-# tarball. `brew install hugo` is the simplest way to get the matching
-# version locally (Homebrew's hugo formula tracks latest stable) - just
-# confirm with `hugo version` that it matches the pin before trusting a
-# diff.
+# macOS: Homebrew's formula tracks the latest version; only trust its build
+# when `hugo version` confirms the exact pinned version.
 brew install hugo && hugo version
 ```
 
@@ -195,14 +192,14 @@ clashes with another open PR's files. This bit us for real: switching
 `hugo-project` to `.Language.Locale`/`.Language.Direction` (for issue #11)
 builds fine under Hugo 0.167.0 but is a **hard build failure** under the
 0.139.0 still pinned upstream (`can't evaluate field Locale in type
-*langs.Language`). The former version-bump PR #1150 was closed for later
-consolidation; its replacement on the `main` track must merge before the
-`hugo-project` PR with the locale change. The unrelated dead
-`td-render-heading.html` template was removed earlier and verified under
-both Hugo versions. The locale change is now staged on the fork's theme
-track, but remains blocked from upstream merge until the main-track pin is
-upgraded. When in doubt, build with *both* the old and new pinned versions
-of whatever you're bumping.
+*langs.Language`). Main-track PR #1152 must merge before theme-track PR
+#1153. The two PRs can be open concurrently; PR creation, draft/ready state,
+and merge order are separate decisions. GitHub does not automatically change
+draft/ready state when a prerequisite merges, and a visible merge button
+does not prove a cross-branch version dependency is satisfied. Only an
+upstream maintainer with write access can merge. The unrelated dead
+`td-render-heading.html` template was verified under both Hugo versions.
+When in doubt, build with *both* the old and new pinned versions.
 
 ## Known gotchas (so you don't rediscover them)
 
@@ -225,9 +222,8 @@ of whatever you're bumping.
   against every diagram type used in `main`'s content). Hugo builds alone
   cannot validate client-side diagram rendering.
 - **The Hugo version pin was bumped `0.139.0` → `0.167.0`** (fork issue
-  [#6](https://github.com/leejongyoung/egovframe-docs/issues/6), upstream PR
-  [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150), now
-  closed for consolidation). Don't
+  [#6](https://github.com/leejongyoung/egovframe-docs/issues/6), current
+  upstream PR [#1152](https://github.com/eGovFramework/egovframe-docs/pull/1152)). Don't
   bump it again casually; it needs the same before/after full-site-diff
   verification described above. 0.167.0 also surfaces three new deprecation
   warnings that only matter for `hugo-project` (its `hugo.toml`'s
@@ -276,8 +272,8 @@ is a completion record, not a scratchpad. When a fix lands, comment on the
 issue with the **full URL** of the upstream PR (e.g.
 `https://github.com/eGovFramework/egovframe-docs/pull/1151`) — not a bare
 `#1151` — and check the boxes it actually resolves, leaving any unresolved
-ones unchecked (see issue #11: #1151 only resolved one of its three items,
-so only that one is checked).
+ones unchecked. Closed or superseded upstream PRs must be identified as such
+in issue comments, with links updated to their current replacements.
 
 `.github/workflows/close-resolved-issues.yml` (daily + `workflow_dispatch`,
 runs `scripts/close_resolved_issues.py`) auto-closes an issue once **both**
@@ -312,3 +308,28 @@ nontrivial change:
 If a step reveals the original plan doesn't work (e.g. "this needs a
 different base branch," "this file doesn't exist where I assumed"), stop and
 re-specify rather than forcing the original plan through.
+
+## Applying this collaboration pattern to another eGovFrame fork
+
+Inspect that repository's upstream, branch histories, workflows, permissions,
+existing issues, and Project before changing its setup. Record the actual
+branch roles and contribution rules in *its own* `AGENTS.md`; do not assume
+every eGovFrame repository has this repo's orphan `hugo-project` track.
+
+- Keep upstream mirror branches byte-identical and move them only by verified
+  fast-forward. Use a separate default `work` integration branch and fork
+  topic PRs with CI as the review checkpoint. Add another integration track
+  only when the upstream repository truly has a separate history.
+- Batch reviewed fork work into an upstream submission. Use a disposable PR
+  head such as `upstream-submit/*`, strip fork-only tooling, inspect the exact
+  diff, and leave the integration branch free for continuing work. Run a
+  scheduled check of open upstream PR heads from the fork's default branch.
+- Track verified findings in fork issues, using consistent labels,
+  milestones, and a Project. Check a task off only after implementation;
+  link the full upstream PR URL and keep superseded PR references current.
+  Close an issue after its checklist is complete and its linked upstream
+  submissions are merged.
+- Verify cross-branch build dependencies and the actual deployed preview.
+  Opening a PR, marking it ready, passing CI, and merging are distinct
+  events. State required merge order in dependent PRs and do not infer it
+  from GitHub's merge button.
