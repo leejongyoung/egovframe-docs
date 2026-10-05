@@ -5,6 +5,12 @@ Instructions for AI coding agents (Claude Code, Codex, Copilot, etc.) working in
 [eGovFramework/egovframe-docs](https://github.com/eGovFramework/egovframe-docs)
 used to prepare clean contributions back to that upstream repo.
 
+As of 2026-10-05, upstream PRs #1150 and #1151 are closed for consolidation.
+Their replacements are still pending. Fork PR #14 has merged the remaining
+Hugo theme fixes into `work-hugo-project`. Submit the `main` Hugo 0.167.0
+pin first; the `hugo-project` locale changes require that pin to be merged
+before they can be merged upstream.
+
 This file is fork-only tooling: it must never be sent upstream (see
 "Submitting to upstream" below). If you are reading this while checked out on
 `main` or `hugo-project`, something is wrong — those branches must stay
@@ -80,10 +86,7 @@ scripts/open_upstream_pr.sh work-hugo-project hugo-project # theme track
 
 This creates a disposable `upstream-submit/<timestamp>` branch from the given
 source, **strips the fork-only tooling denylist** (see the `DENYLIST` array
-inside the script — currently `AGENTS.md`, `.github/FORK_PREVIEW.md`,
-`.github/workflows/fork-preview.yml`, `.github/workflows/sync-upstream-mirrors.yml`,
-`scripts/prepare_fork_site.py`, `scripts/preview_fork.sh`,
-`scripts/open_upstream_pr.sh`), pushes it, and opens a PR against
+inside the script), pushes it, and opens a PR against
 `eGovFramework/egovframe-docs` with `gh pr create` (title/body are entered
 interactively). The source branch (`work`/`work-hugo-project`) is left
 untouched. **If you add new fork-only files, add them to `DENYLIST` first.**
@@ -107,18 +110,10 @@ instead.
 
 **Don't rely on memory to catch this again — `.github/workflows/check-upstream-pr-hygiene.yml`**
 (daily + `workflow_dispatch`) lists every open upstream PR authored by
-`leejongyoung` and fails loudly if any PR's head branch doesn't start with
-`upstream-submit/`. It deliberately runs on a *schedule from `work`*
-instead of a `push` trigger: push-triggered workflows only fire when the
-workflow file exists in the pushed branch's own tree, and a fresh topic
-branch cut from `main` or `hugo-project` never has one (that's exactly how
-#1151 slipped through — `fix/hugo-project-maintenance` has no `.github/`
-at all). A schedule on the default branch catches it regardless of which
-branch the bad push landed on. #1151 currently fails this check and that's
-expected — it's flagging real latent risk (if `fix/hugo-project-maintenance`
-ever gets pushed to again, #1151 updates silently), not a false positive;
-the failure clears once #1151 merges or is resubmitted from a real
-snapshot branch.
+`leejongyoung` and fails if any head branch does not start with
+`upstream-submit/`. It runs from the default `work` branch, so it also
+catches topic branches that do not contain a workflow file. After #1150
+and #1151 were closed, the check passed with zero open upstream PRs.
 
 ## Upstream rules you must not break
 
@@ -198,14 +193,14 @@ clashes with another open PR's files. This bit us for real: switching
 `hugo-project` to `.Language.Locale`/`.Language.Direction` (for issue #11)
 builds fine under Hugo 0.167.0 but is a **hard build failure** under the
 0.139.0 still pinned upstream (`can't evaluate field Locale in type
-*langs.Language`) — i.e. it only works *after* PR #1150 (the Hugo version
-bump) merges, not independently. The fix: split the change, ship only the
-version-independent part now (deleting the unrelated dead
-`td-render-heading.html` template was safe under both versions - verified
-by literally building with both binaries), and leave the version-dependent
-part on the issue as explicitly blocked until the dependency lands. When in
-doubt, build with *both* the old and new pinned versions of whatever
-you're bumping, not just the new one.
+*langs.Language`). The former version-bump PR #1150 was closed for later
+consolidation; its replacement on the `main` track must merge before the
+`hugo-project` PR with the locale change. The unrelated dead
+`td-render-heading.html` template was removed earlier and verified under
+both Hugo versions. The locale change is now staged on the fork's theme
+track, but remains blocked from upstream merge until the main-track pin is
+upgraded. When in doubt, build with *both* the old and new pinned versions
+of whatever you're bumping.
 
 ## Known gotchas (so you don't rediscover them)
 
@@ -219,22 +214,18 @@ you're bumping, not just the new one.
   output). This is a pre-existing upstream bug unrelated to anything this
   fork has changed — don't assume you broke it if you see it, and don't try
   to "fix" it incidentally as part of an unrelated change.
-- **`mermaid.min.js` is vendored with no `package.json`.** It's mermaid's
-  own official `dist/mermaid.min.js` npm build (confirmed by the matching
-  esbuild wrapper shape), just copied in without any version marker.
-  Currently `12.1.0` (bumped from a buried `version:"11.15.0"` string found
-  inside the obfuscated 11.x source) — check
-  `gh api repos/mermaid-js/mermaid/tags` before assuming this is still
-  current. The header comment records the version and the date it was
-  fetched; keep it updated if you bump the bundle again, and re-verify
-  rendering the same way PR #1151 did (Playwright + real Chrome against
-  every diagram type actually used in
-  `main`'s content, not just a build-succeeds check — mermaid renders
-  client-side, so a clean Hugo build proves nothing about whether diagrams
-  still draw correctly).
+- **`mermaid.min.js` is vendored from the official npm distribution.**
+  `themes/krds-theme/package.json` pins Mermaid 12.1.0 and records the
+  vendoring date; `npm ci && npm run build:vendor` reproduces the committed
+  browser bundle byte for byte. The fork preview checks this on the theme
+  track. When updating Mermaid, change the pin and date together, then
+  re-verify browser rendering as PR #1151 did (Playwright + real Chrome
+  against every diagram type used in `main`'s content). Hugo builds alone
+  cannot validate client-side diagram rendering.
 - **The Hugo version pin was bumped `0.139.0` → `0.167.0`** (fork issue
   [#6](https://github.com/leejongyoung/egovframe-docs/issues/6), upstream PR
-  [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150)). Don't
+  [#1150](https://github.com/eGovFramework/egovframe-docs/pull/1150), now
+  closed for consolidation). Don't
   bump it again casually; it needs the same before/after full-site-diff
   verification described above. 0.167.0 also surfaces three new deprecation
   warnings that only matter for `hugo-project` (its `hugo.toml`'s
