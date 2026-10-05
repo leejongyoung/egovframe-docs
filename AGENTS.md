@@ -153,8 +153,10 @@ of what CI will do. `scripts/prepare_fork_site.py` is what rewrites
 `leejongyoung.github.io` for both the local script and CI; look there before
 changing any URL-rewriting logic.
 
-The live fork preview (pushes to `work` only) is published at
-<https://leejongyoung.github.io/egovframe-docs/>.
+The live fork preview is published from `work-hugo-project` pushes, using
+that branch's Hugo theme and the `main` documentation, at
+<https://leejongyoung.github.io/egovframe-docs/>. The `work` content track
+still produces downloadable HTML artifacts for PRs and pushes.
 
 ## Verifying a change before opening any PR
 
