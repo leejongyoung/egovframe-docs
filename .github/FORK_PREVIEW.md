@@ -14,7 +14,7 @@ to this fork's own `gh-pages` branch and GitHub Pages at
 <https://leejongyoung.github.io/egovframe-docs/> — these steps only ever
 touch branches and Pages belonging to this fork.
 
-For an immediate local preview, install Hugo 0.139.0 (extended) and run:
+For an immediate local preview, install Hugo 0.167.0 (extended) and run:
 
 ```sh
 ./scripts/preview_fork.sh
