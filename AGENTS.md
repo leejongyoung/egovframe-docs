@@ -88,6 +88,23 @@ inside the script — currently `AGENTS.md`, `.github/FORK_PREVIEW.md`,
 interactively). The source branch (`work`/`work-hugo-project`) is left
 untouched. **If you add new fork-only files, add them to `DENYLIST` first.**
 
+**Always use this script to get the PR head branch — never open an
+upstream PR directly from `work`, `work-hugo-project`, or any other branch
+you intend to keep developing on.** An open PR's diff is live: GitHub
+recomputes it from the current head branch on every push, not from a
+snapshot taken when the PR was opened. PR #1150 did this correctly (head
+is a disposable `upstream-submit/20261005121218`, so later commits to
+`work` never touched it). PR #1151 didn't — it was opened directly from
+`fix/hugo-project-maintenance`, which was still being pushed to
+afterwards (a mermaid-header date fix, then the dead-template removal),
+so those commits appeared in the already-open PR automatically. The
+*content* happened to be fine both times (everything pushed there was
+meant for that PR anyway), but it was only safe by luck, not by design -
+don't rely on that. Once a PR like #1151 exists from a branch you're still
+using for development, stop pushing to that branch; do further work
+through a fresh topic branch and a new `open_upstream_pr.sh` snapshot
+instead.
+
 ## Upstream rules you must not break
 
 - **Never touch the frontmatter of an existing `.md` file** on the content
