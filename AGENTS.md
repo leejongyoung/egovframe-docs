@@ -105,6 +105,21 @@ using for development, stop pushing to that branch; do further work
 through a fresh topic branch and a new `open_upstream_pr.sh` snapshot
 instead.
 
+**Don't rely on memory to catch this again — `.github/workflows/check-upstream-pr-hygiene.yml`**
+(daily + `workflow_dispatch`) lists every open upstream PR authored by
+`leejongyoung` and fails loudly if any PR's head branch doesn't start with
+`upstream-submit/`. It deliberately runs on a *schedule from `work`*
+instead of a `push` trigger: push-triggered workflows only fire when the
+workflow file exists in the pushed branch's own tree, and a fresh topic
+branch cut from `main` or `hugo-project` never has one (that's exactly how
+#1151 slipped through — `fix/hugo-project-maintenance` has no `.github/`
+at all). A schedule on the default branch catches it regardless of which
+branch the bad push landed on. #1151 currently fails this check and that's
+expected — it's flagging real latent risk (if `fix/hugo-project-maintenance`
+ever gets pushed to again, #1151 updates silently), not a false positive;
+the failure clears once #1151 merges or is resubmitted from a real
+snapshot branch.
+
 ## Upstream rules you must not break
 
 - **Never touch the frontmatter of an existing `.md` file** on the content
