@@ -71,16 +71,16 @@ jobs:
         with:
           name: fork-preview-html
           path: public
-      # work-hugo-project에서 진행 중인 테마 실험이 work의 "진짜" 미리보기 사이트를
-      # 덮어쓰지 않도록, GitHub Pages 자동 배포는 work 트랙 push에만 한정한다.
+      # 라이브 Pages는 work-hugo-project 테마와 main 문서의 조합을 보여준다.
+      # work 트랙은 PR/푸시 HTML artifact만 만든다.
       - name: Prepare GitHub Pages artifact
-        if: github.event_name == 'push' && github.ref_name == 'work'
+        if: github.event_name == 'push' && github.ref_name == 'work-hugo-project'
         uses: actions/upload-pages-artifact@v4
         with:
           path: public
 
   update-gh-pages:
-    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work'
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work-hugo-project'
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -99,7 +99,7 @@ jobs:
           publish_branch: gh-pages
 
   deploy:
-    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work'
+    if: github.repository == 'leejongyoung/egovframe-docs' && github.event_name == 'push' && github.ref_name == 'work-hugo-project'
     needs: [build, update-gh-pages]
     runs-on: ubuntu-latest
     permissions:
