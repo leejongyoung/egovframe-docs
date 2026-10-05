@@ -37,6 +37,7 @@ DENYLIST=(
   ".github/workflows/fork-preview.yml"
   ".github/workflows/sync-upstream-mirrors.yml"
   ".github/workflows/close-resolved-issues.yml"
+  ".github/workflows/check-upstream-pr-hygiene.yml"
   "scripts/prepare_fork_site.py"
   "scripts/preview_fork.sh"
   "scripts/open_upstream_pr.sh"

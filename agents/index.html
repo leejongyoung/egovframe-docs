@@ -77,7 +77,20 @@ meant for that PR anyway), but it was only safe by luck, not by design -
 don&rsquo;t rely on that. Once a PR like #1151 exists from a branch you&rsquo;re still
 using for development, stop pushing to that branch; do further work
 through a fresh topic branch and a new <code>open_upstream_pr.sh</code> snapshot
-instead.</p></div><div class="conts-wrap section-link" id=section_03><h2 class=sec-tit id=upstream-rules-you-must-not-break>Upstream rules you must not break</h2><ul><li><strong>Never touch the frontmatter of an existing <code></code> file</strong> on the content
+instead.</p><p><strong>Don&rsquo;t rely on memory to catch this again — <code>.github/workflows/check-upstream-pr-hygiene.yml</code></strong>
+(daily + <code>workflow_dispatch</code>) lists every open upstream PR authored by
+<code>leejongyoung</code> and fails loudly if any PR&rsquo;s head branch doesn&rsquo;t start with
+<code>upstream-submit/</code>. It deliberately runs on a <em>schedule from <code>work</code></em>
+instead of a <code>push</code> trigger: push-triggered workflows only fire when the
+workflow file exists in the pushed branch&rsquo;s own tree, and a fresh topic
+branch cut from <code>main</code> or <code>hugo-project</code> never has one (that&rsquo;s exactly how
+#1151 slipped through — <code>fix/hugo-project-maintenance</code> has no <code>.github/</code>
+at all). A schedule on the default branch catches it regardless of which
+branch the bad push landed on. #1151 currently fails this check and that&rsquo;s
+expected — it&rsquo;s flagging real latent risk (if <code>fix/hugo-project-maintenance</code>
+ever gets pushed to again, #1151 updates silently), not a false positive;
+the failure clears once #1151 merges or is resubmitted from a real
+snapshot branch.</p></div><div class="conts-wrap section-link" id=section_03><h2 class=sec-tit id=upstream-rules-you-must-not-break>Upstream rules you must not break</h2><ul><li><strong>Never touch the frontmatter of an existing <code></code> file</strong> on the content
 track. Upstream&rsquo;s <code>merge-on-pr.yaml</code> bot diffs frontmatter blocks (the
 first <code>---</code>…<code>---</code>) on every PR touching <code>main</code>; if it detects a change on
 a <em>modified</em> file (new files are exempt), it blocks auto-merge and comments
