@@ -30,11 +30,20 @@ against <code>eGovFramework/egovframe-docs</code> directly from a throwaway bran
 <code>work-hugo-project</code>). This is the review checkpoint — CI (<code>fork-preview.yml</code>)
 builds the site and uploads a downloadable HTML preview artifact on every
 push/PR to either integration branch. Use this step for agent review,
-human review, or both, before anything goes near upstream.</li><li>Once merged into <code>work</code>/<code>work-hugo-project</code> and you&rsquo;re satisfied, cut the
-upstream submission with the script below. It only runs when you choose
-to run it — nothing in this repo opens PRs against the upstream repo
-automatically.</li></ol><h3 class=sec-tit id=submitting-to-upstream>Submitting to upstream</h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>scripts/open_upstream_pr.sh work main                    <span style=color:#998;font-style:italic># content track</span>
-</span></span><span style=display:flex><span>scripts/open_upstream_pr.sh work-hugo-project hugo-project <span style=color:#998;font-style:italic># theme track</span>
+human review, or both, before anything goes near upstream.</li><li><strong>Default cadence: batch, don&rsquo;t submit after every single fork PR.</strong> Let
+several fork-side PRs land on <code>work</code>/<code>work-hugo-project</code> first, then cut
+<em>one</em> upstream submission covering all of them. Submitting upstream
+immediately after each individual fork PR merge (as was done once for
+PRs
+<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1149 target=_blank rel="noopener noreferrer" class=externalLink>#1149<i class="svg-icon ico-go"></i></a>
+and
+<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1150 target=_blank rel="noopener noreferrer" class=externalLink>#1150<i class="svg-icon ico-go"></i></a>
+)
+is the exception, not the rule — upstream reviewers deal with one
+consolidated PR per batch, not a stream of small ones. Either way, the
+script below only runs when a human chooses to run it — nothing in this
+repo opens PRs against the upstream repo automatically.</li></ol><h3 class=sec-tit id=submitting-to-upstream>Submitting to upstream</h3><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>scripts/open_upstream_pr.sh work main                    <span style=color:#57606a># content track</span>
+</span></span><span style=display:flex><span>scripts/open_upstream_pr.sh work-hugo-project hugo-project <span style=color:#57606a># theme track</span>
 </span></span></code></pre></div><p>This creates a disposable <code>upstream-submit/&lt;timestamp></code> branch from the given
 source, <strong>strips the fork-only tooling denylist</strong> (see the <code>DENYLIST</code> array
 inside the script — currently <code>AGENTS</code>, <code>.github/FORK_PREVIEW</code>,
@@ -59,10 +68,10 @@ YAML&rsquo;s settings (e.g. the pinned Hugo version) belongs on the content
 track (<code>main</code>/<code>work</code>), not a <code>hugo-project</code> PR, even if it&rsquo;s about
 building the Hugo site.</li><li><code>hugo-project</code> commit history so far is maintainer-only accounts
 (<code>hjlee1107</code>, <code>eGovFrameSupport</code>). Treat changes there as proposals, not
-assumed-acceptable PRs.</li></ul></div><div class="conts-wrap section-link" id=section_04><h2 class=sec-tit id=local-preview>Local preview</h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>./scripts/preview_fork.sh
+assumed-acceptable PRs.</li></ul></div><div class="conts-wrap section-link" id=section_04><h2 class=sec-tit id=local-preview>Local preview</h2><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>./scripts/preview_fork.sh
 </span></span></code></pre></div><p>Renders the current checkout (including uncommitted changes) at
 <code>http://127.0.0.1:8888/</code>, using the Hugo layout from <code>origin/hugo-project</code>
-and the pinned Hugo <strong>0.139.0</strong> (extended) binary — match this version
+and the pinned Hugo <strong>0.167.0</strong> (extended) binary — match this version
 exactly when testing locally; a different Hugo version is not a valid test
 of what CI will do. <code>scripts/prepare_fork_site.py</code> is what rewrites
 <code>hugo.toml</code>&rsquo;s baseURL/repo links from the upstream site to
@@ -70,9 +79,17 @@ of what CI will do. <code>scripts/prepare_fork_site.py</code> is what rewrites
 changing any URL-rewriting logic.</p><p>The live fork preview (pushes to <code>work</code> only) is published at
 <a class="krds-btn medium text" href=https://leejongyoung.github.io/egovframe-docs/ target=_blank rel="noopener noreferrer" class=externalLink>https://leejongyoung.github.io/egovframe-docs/<i class="svg-icon ico-go"></i></a>
 .</p></div><div class="conts-wrap section-link" id=section_05><h2 class=sec-tit id=verifying-a-change-before-opening-any-pr>Verifying a change before opening any PR</h2><p>There&rsquo;s no CI step on this fork that actually builds the full site with
-real content and diffs it — do this manually:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span><span style=color:#998;font-style:italic># download the exact pinned version, don&#39;t use whatever `hugo` is on PATH</span>
-</span></span><span style=display:flex><span>gh release download v0.139.0 --repo gohugoio/hugo <span style=color:#d14>\
-</span></span></span><span style=display:flex><span><span style=color:#d14></span>  --pattern <span style=color:#d14>&#34;hugo_extended_0.139.0_&lt;platform&gt;.tar.gz&#34;</span>
+real content and diffs it — do this manually:</p><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span><span style=color:#57606a># Linux/CI-matching binary: download the exact pinned version, don&#39;t use</span>
+</span></span><span style=display:flex><span><span style=color:#57606a># whatever `hugo` happens to be on PATH.</span>
+</span></span><span style=display:flex><span>gh release download v0.167.0 --repo gohugoio/hugo <span style=color:#0a3069>\
+</span></span></span><span style=display:flex><span>  --pattern <span style=color:#0a3069>&#34;hugo_extended_0.167.0_Linux-64bit.tar.gz&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># macOS: recent Hugo releases only ship a .pkg installer for darwin, not a</span>
+</span></span><span style=display:flex><span><span style=color:#57606a># tarball. `brew install hugo` is the simplest way to get the matching</span>
+</span></span><span style=display:flex><span><span style=color:#57606a># version locally (Homebrew&#39;s hugo formula tracks latest stable) - just</span>
+</span></span><span style=display:flex><span><span style=color:#57606a># confirm with `hugo version` that it matches the pin before trusting a</span>
+</span></span><span style=display:flex><span><span style=color:#57606a># diff.</span>
+</span></span><span style=display:flex><span>brew install hugo <span style=color:#0550ae>&amp;&amp;</span> hugo version
 </span></span></code></pre></div><p>Then build with real <code>main</code> content copied into <code>hugo-project</code>&rsquo;s <code>content/</code>
 (mirroring what CI&rsquo;s &ldquo;Copy markdown files to content&rdquo; step does), and diff
 the output <code>public/</code> tree against a baseline build from before your change.
@@ -89,18 +106,29 @@ was removed in PR #1149; the theme is just a vendored directory.</li><li><strong
 <code>themes/krds-theme/layouts/partials/head/js.html</code>, the <code>resources.Concat</code>
 output). This is a pre-existing upstream bug unrelated to anything this
 fork has changed — don&rsquo;t assume you broke it if you see it, and don&rsquo;t try
-to &ldquo;fix&rdquo; it incidentally as part of an unrelated change.</li><li><strong><code>mermaid.min.js</code> is vendored with no <code>package.json</code>.</strong> The bundle is
-esbuild-minified with no visible version anywhere except a buried
-<code>version:"11.15.0"</code> string inside the obfuscated source (latest upstream
-mermaid is newer — check <code>gh api repos/mermaid-js/mermaid/tags</code> before
-assuming 11.15.0 is still current). A one-line header comment recording
-this was added in PR #1149; keep it updated if you ever actually bump the
-bundle.</li><li><strong>The pinned Hugo version (<code>0.139.0</code>) is tracked as stale</strong> (fork issue
+to &ldquo;fix&rdquo; it incidentally as part of an unrelated change.</li><li><strong><code>mermaid.min.js</code> is vendored with no <code>package.json</code>.</strong> It&rsquo;s mermaid&rsquo;s
+own official <code>dist/mermaid.min.js</code> npm build (confirmed by the matching
+esbuild wrapper shape), just copied in without any version marker.
+Currently <code>12.1.0</code> (bumped from a buried <code>version:"11.15.0"</code> string found
+inside the obfuscated 11.x source) — check
+<code>gh api repos/mermaid-js/mermaid/tags</code> before assuming this is still
+current. The header comment records the version; keep it updated if you
+bump the bundle again, and re-verify rendering the same way PR #1149 did
+(Playwright + real Chrome against every diagram type actually used in
+<code>main</code>&rsquo;s content, not just a build-succeeds check — mermaid renders
+client-side, so a clean Hugo build proves nothing about whether diagrams
+still draw correctly).</li><li><strong>The Hugo version pin was bumped <code>0.139.0</code> → <code>0.167.0</code></strong> (fork issue
 <a class="krds-btn medium text" href=https://github.com/leejongyoung/egovframe-docs/issues/6 target=_blank rel="noopener noreferrer" class=externalLink>#6<i class="svg-icon ico-go"></i></a>
-— latest at
-last check was <code>0.167.0</code>, ~83 releases newer). Don&rsquo;t bump it casually; it
-needs the same before/after full-site-diff verification described above,
-and the fix belongs on the content track (see &ldquo;Upstream rules&rdquo; above).</li><li><strong><code>markdown-lint.yml</code> and <code>link-check.yml</code> on <code>main</code> are entirely commented
+, upstream PR
+<a class="krds-btn medium text" href=https://github.com/eGovFramework/egovframe-docs/pull/1150 target=_blank rel="noopener noreferrer" class=externalLink>#1150<i class="svg-icon ico-go"></i></a>
+). Don&rsquo;t
+bump it again casually; it needs the same before/after full-site-diff
+verification described above. 0.167.0 also surfaces three new deprecation
+warnings that only matter for <code>hugo-project</code> (its <code>hugo.toml</code>&rsquo;s
+<code>languageCode</code> key, and <code>.Language.LanguageCode</code>/<code>.Language.LanguageDirection</code>
+in templates, plus an &ldquo;unrecognized render hook template&rdquo; warning for an
+already-dead template) — tracked separately as a <code>hugo-project</code>/
+<code>work-hugo-project</code> fix, not a content-track one.</li><li><strong><code>markdown-lint.yml</code> and <code>link-check.yml</code> on <code>main</code> are entirely commented
 out</strong> — they do nothing. <code>scripts/docs_lint.py</code> exists but is not wired
 into any CI workflow either. Don&rsquo;t assume either one is actually linting
 anything right now.</li><li><strong><code>deploy-on-*.yaml</code> on <code>main</code> install Node.js 18</strong> (EOL since 2025-04)
@@ -115,7 +143,7 @@ deliberately deleted in favor of this scheme — don&rsquo;t recreate them.</p><
 roadmap items) — e.g. &ldquo;공통컴포넌트 공백 보완&rdquo;, &ldquo;5.x 버전 정합성 점검&rdquo;,
 &ldquo;hugo-project 유지보수 점검&rdquo;. When filing a new issue, attach it to an
 existing milestone if it fits, and add it to the GitHub Project
-(&ldquo;egovframe-docs 기여 로드맵&rdquo;, project number 3, owner <code>leejongyoung</code>) with:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>gh project item-add <span style=color:#099>3</span> --owner leejongyoung --url &lt;issue-url&gt;
+(&ldquo;egovframe-docs 기여 로드맵&rdquo;, project number 3, owner <code>leejongyoung</code>) with:</p><div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>gh project item-add <span style=color:#0550ae>3</span> --owner leejongyoung --url &lt;issue-url&gt;
 </span></span></code></pre></div><p>Every issue should describe a finding you&rsquo;ve actually verified (grep output,
 a build log, a diff) — not a suspicion. If investigation shows an issue
 can&rsquo;t actually be fixed in the PR scope you assumed (as happened with issue

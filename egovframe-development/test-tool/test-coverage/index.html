@@ -87,101 +87,101 @@ Ant와 Maven에서 실행 가능하며, Command-line에서도 사용 가능하�
 <a class="krds-btn medium text" href=/egovframe-docs/egovframe-development/test-tool/test-tool-ref/run-ant-on-eclipse/ class=innerLink>이클립스에서 Ant 실행하기</a>
 를 참조하여 설정된 target을 실행한다.</li><li>리포트 확인 : 지정된 위치 즉, <strong>outfile</strong>에 설정한 리포트를 확인할 수 있다</li></ol></div><div class="conts-wrap section-link" id=section_05><h2 class=sec-tit id=샘플>샘플</h2><h3 class=sec-tit id=maven을-이용한-emma-설정-샘플>Maven을 이용한 EMMA 설정 샘플</h3><p>전체 설정 내용은
 <a class="krds-btn medium text" href=/egovframe-docs/egovframe-development/test-tool/test-tool-ref/pom-example-for-run-emma/ class=innerLink>EMMA 실행을 위한 pom.xml 설정 샘플</a>
-을 참조하기 바란다.</p><ol><li>instrument : Test Coverage 분석만 하고 XML 결과까지만 남길 경우<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:navy>&lt;build&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;plugins&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>&lt;!-- test --&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;plugin&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;groupId&gt;</span>org.apache.maven.plugins<span style=color:navy>&lt;/groupId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;artifactId&gt;</span>maven-surefire-plugin<span style=color:navy>&lt;/artifactId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;configuration&gt;</span>
-</span></span><span style=display:flex><span>                <span style=color:navy>&lt;skipTests&gt;</span>false<span style=color:navy>&lt;/skipTests&gt;</span>
-</span></span><span style=display:flex><span>                <span style=color:navy>&lt;forkMode&gt;</span>always<span style=color:navy>&lt;/forkMode&gt;</span>
-</span></span><span style=display:flex><span>                <span style=color:navy>&lt;reportFormat&gt;</span>xml<span style=color:navy>&lt;/reportFormat&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;/configuration&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/plugin&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>&lt;!-- EMMA   --&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;plugin&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;groupId&gt;</span>org.codehaus.mojo<span style=color:navy>&lt;/groupId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;artifactId&gt;</span>emma-maven-plugin<span style=color:navy>&lt;/artifactId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;version&gt;</span>1.0-alpha-1<span style=color:navy>&lt;/version&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/plugin&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/plugins&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;/build&gt;</span>
-</span></span></code></pre></div></li><li>Test Coverage HTML 리포트 생성<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:navy>&lt;reporting&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;plugins&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>&lt;!-- EMMA Coverage Reporting --&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;plugin&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;groupId&gt;</span>org.codehaus.mojo<span style=color:navy>&lt;/groupId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;artifactId&gt;</span>emma-maven-plugin<span style=color:navy>&lt;/artifactId&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;inherited&gt;</span>true<span style=color:navy>&lt;/inherited&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/plugin&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/plugins&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;/reporting&gt;</span>
+을 참조하기 바란다.</p><ol><li>instrument : Test Coverage 분석만 하고 XML 결과까지만 남길 경우<div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#0550ae>&lt;build&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;plugins&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#57606a>&lt;!-- test --&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;plugin&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;groupId&gt;</span>org.apache.maven.plugins<span style=color:#0550ae>&lt;/groupId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;artifactId&gt;</span>maven-surefire-plugin<span style=color:#0550ae>&lt;/artifactId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;configuration&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:#0550ae>&lt;skipTests&gt;</span>false<span style=color:#0550ae>&lt;/skipTests&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:#0550ae>&lt;forkMode&gt;</span>always<span style=color:#0550ae>&lt;/forkMode&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:#0550ae>&lt;reportFormat&gt;</span>xml<span style=color:#0550ae>&lt;/reportFormat&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;/configuration&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/plugin&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#57606a>&lt;!-- EMMA   --&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;plugin&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;groupId&gt;</span>org.codehaus.mojo<span style=color:#0550ae>&lt;/groupId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;artifactId&gt;</span>emma-maven-plugin<span style=color:#0550ae>&lt;/artifactId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;version&gt;</span>1.0-alpha-1<span style=color:#0550ae>&lt;/version&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/plugin&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;/plugins&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;/build&gt;</span>
+</span></span></code></pre></div></li><li>Test Coverage HTML 리포트 생성<div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#0550ae>&lt;reporting&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;plugins&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#57606a>&lt;!-- EMMA Coverage Reporting --&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;plugin&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;groupId&gt;</span>org.codehaus.mojo<span style=color:#0550ae>&lt;/groupId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;artifactId&gt;</span>emma-maven-plugin<span style=color:#0550ae>&lt;/artifactId&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;inherited&gt;</span>true<span style=color:#0550ae>&lt;/inherited&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/plugin&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;/plugins&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;/reporting&gt;</span>
 </span></span></code></pre></div></li></ol><h3 class=sec-tit id=ant를-이용한-emma-설정-샘플>Ant를 이용한 EMMA 설정 샘플</h3><p>전체 설정 내용은
 <a class="krds-btn medium text" href=/egovframe-docs/egovframe-development/test-tool/test-tool-ref/build-example-for-run-emma/ class=innerLink>EMMA 실행을 위한 build.xml 설정 샘플</a>
-을 참조하기 바란다.</p><ol><li>instrument : Test Coverage 분석만 하고 XML 결과까지만 남길 경우<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#998;font-style:italic>&lt;!-- EMMA 세팅 생략 --&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;target</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;emma-jars&#34;</span> <span style=color:teal>depends=</span><span style=color:#d14>&#34;build&#34;</span> <span style=color:teal>description=</span><span style=color:#d14>&#34;Uses Emma to instrument the jar files&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;emma</span> <span style=color:teal>enabled=</span><span style=color:#d14>&#34;${emma.enabled}&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;instr</span> <span style=color:teal>mode=</span><span style=color:#d14>&#34;fullcopy&#34;</span>
-</span></span><span style=display:flex><span>               <span style=color:teal>outdir=</span><span style=color:#d14>&#34;${basedir}/build/temp&#34;</span>
-</span></span><span style=display:flex><span>               <span style=color:teal>merge=</span><span style=color:#d14>&#34;yes&#34;</span>
-</span></span><span style=display:flex><span>               <span style=color:teal>filter=</span><span style=color:#d14>&#34;egovframework.dev.tst.*&#34;</span>
-</span></span><span style=display:flex><span>               <span style=color:teal>metadatafile=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage/coverage.em&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;instrpath&gt;</span>
-</span></span><span style=display:flex><span>                <span style=color:navy>&lt;fileset</span> <span style=color:teal>dir=</span><span style=color:#d14>&#34;build/&#34;</span> <span style=color:teal>includes=</span><span style=color:#d14>&#34;${ant.project.name}.jar&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;/instrpath&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/instr&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/emma&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;/target&gt;</span>
+을 참조하기 바란다.</p><ol><li>instrument : Test Coverage 분석만 하고 XML 결과까지만 남길 경우<div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#57606a>&lt;!-- EMMA 세팅 생략 --&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;target</span> <span style=color:#1f2328>name=</span><span style=color:#0a3069>&#34;emma-jars&#34;</span> <span style=color:#1f2328>depends=</span><span style=color:#0a3069>&#34;build&#34;</span> <span style=color:#1f2328>description=</span><span style=color:#0a3069>&#34;Uses Emma to instrument the jar files&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;emma</span> <span style=color:#1f2328>enabled=</span><span style=color:#0a3069>&#34;${emma.enabled}&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;instr</span> <span style=color:#1f2328>mode=</span><span style=color:#0a3069>&#34;fullcopy&#34;</span>
+</span></span><span style=display:flex><span>               <span style=color:#1f2328>outdir=</span><span style=color:#0a3069>&#34;${basedir}/build/temp&#34;</span>
+</span></span><span style=display:flex><span>               <span style=color:#1f2328>merge=</span><span style=color:#0a3069>&#34;yes&#34;</span>
+</span></span><span style=display:flex><span>               <span style=color:#1f2328>filter=</span><span style=color:#0a3069>&#34;egovframework.dev.tst.*&#34;</span>
+</span></span><span style=display:flex><span>               <span style=color:#1f2328>metadatafile=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage/coverage.em&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;instrpath&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:#0550ae>&lt;fileset</span> <span style=color:#1f2328>dir=</span><span style=color:#0a3069>&#34;build/&#34;</span> <span style=color:#1f2328>includes=</span><span style=color:#0a3069>&#34;${ant.project.name}.jar&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;/instrpath&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/instr&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;/emma&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;/target&gt;</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:navy>&lt;target</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;test.with.emma&#34;</span> <span style=color:teal>depends=</span><span style=color:#d14>&#34;emma-jars&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;target</span> <span style=color:#1f2328>name=</span><span style=color:#0a3069>&#34;test.with.emma&#34;</span> <span style=color:#1f2328>depends=</span><span style=color:#0a3069>&#34;emma-jars&#34;</span><span style=color:#0550ae>&gt;</span>
 </span></span><span style=display:flex><span>   . . . 중략 . . .
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;junit</span> <span style=color:teal>fork=</span><span style=color:#d14>&#34;yes&#34;</span>
-</span></span><span style=display:flex><span>           <span style=color:teal>printsummary=</span><span style=color:#d14>&#34;yes&#34;</span>
-</span></span><span style=display:flex><span>           <span style=color:teal>haltonfailure=</span><span style=color:#d14>&#34;no&#34;</span>
-</span></span><span style=display:flex><span>           <span style=color:teal>failureproperty=</span><span style=color:#d14>&#34;test.failed&#34;</span>
-</span></span><span style=display:flex><span>           <span style=color:teal>errorproperty=</span><span style=color:#d14>&#34;test.failed&#34;</span>
-</span></span><span style=display:flex><span>           <span style=color:teal>dir=</span><span style=color:#d14>&#34;${basedir}&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;classpath&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;path</span> <span style=color:teal>refid=</span><span style=color:#d14>&#34;master-classpath&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;path</span> <span style=color:teal>refid=</span><span style=color:#d14>&#34;test-classpath&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;path</span> <span style=color:teal>refid=</span><span style=color:#d14>&#34;emma.lib&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;fileset</span> <span style=color:teal>dir=</span><span style=color:#d14>&#34;${basedir}/build/temp/lib&#34;</span>
-</span></span><span style=display:flex><span>                     <span style=color:teal>includes=</span><span style=color:#d14>&#34;${ant.project.name}.jar&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;pathelement</span> <span style=color:teal>location=</span><span style=color:#d14>&#34;${testbuild.dir}&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/classpath&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;junit</span> <span style=color:#1f2328>fork=</span><span style=color:#0a3069>&#34;yes&#34;</span>
+</span></span><span style=display:flex><span>           <span style=color:#1f2328>printsummary=</span><span style=color:#0a3069>&#34;yes&#34;</span>
+</span></span><span style=display:flex><span>           <span style=color:#1f2328>haltonfailure=</span><span style=color:#0a3069>&#34;no&#34;</span>
+</span></span><span style=display:flex><span>           <span style=color:#1f2328>failureproperty=</span><span style=color:#0a3069>&#34;test.failed&#34;</span>
+</span></span><span style=display:flex><span>           <span style=color:#1f2328>errorproperty=</span><span style=color:#0a3069>&#34;test.failed&#34;</span>
+</span></span><span style=display:flex><span>           <span style=color:#1f2328>dir=</span><span style=color:#0a3069>&#34;${basedir}&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;classpath&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;path</span> <span style=color:#1f2328>refid=</span><span style=color:#0a3069>&#34;master-classpath&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;path</span> <span style=color:#1f2328>refid=</span><span style=color:#0a3069>&#34;test-classpath&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;path</span> <span style=color:#1f2328>refid=</span><span style=color:#0a3069>&#34;emma.lib&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;fileset</span> <span style=color:#1f2328>dir=</span><span style=color:#0a3069>&#34;${basedir}/build/temp/lib&#34;</span>
+</span></span><span style=display:flex><span>                     <span style=color:#1f2328>includes=</span><span style=color:#0a3069>&#34;${ant.project.name}.jar&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;pathelement</span> <span style=color:#1f2328>location=</span><span style=color:#0a3069>&#34;${testbuild.dir}&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/classpath&gt;</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;formatter</span> <span style=color:teal>type=</span><span style=color:#d14>&#34;xml&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;batchtest</span> <span style=color:teal>fork=</span><span style=color:#d14>&#34;yes&#34;</span> <span style=color:teal>todir=</span><span style=color:#d14>&#34;${artifactsDir}/test-results/xml&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;fileset</span> <span style=color:teal>dir=</span><span style=color:#d14>&#34;${testbuild.dir}&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>                <span style=color:navy>&lt;include</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;**/*Test.class&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;/fileset&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/batchtest&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/junit&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;/target&gt;</span>
-</span></span></code></pre></div></li><li>Test Coverage 리포트 생성<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#998;font-style:italic>&lt;!-- Test Code Coverage Report  --&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;target</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;emmareport&#34;</span> <span style=color:teal>depends=</span><span style=color:#d14>&#34;test.with.emma&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;move</span> <span style=color:teal>file=</span><span style=color:#d14>&#34;${basedir}/coverage.ec&#34;</span>
-</span></span><span style=display:flex><span>          <span style=color:teal>todir=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;emma</span> <span style=color:teal>description=</span><span style=color:#d14>&#34;now we can generate the emma report&#34;</span>
-</span></span><span style=display:flex><span>          <span style=color:teal>enabled=</span><span style=color:#d14>&#34;${emma.enabled}&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;report</span> <span style=color:teal>sourcepath=</span><span style=color:#d14>&#34;${src.dir}&#34;</span>
-</span></span><span style=display:flex><span>                <span style=color:teal>sort=</span><span style=color:#d14>&#34;+name,+method,+class&#34;</span>
-</span></span><span style=display:flex><span>                <span style=color:teal>metrics=</span><span style=color:#d14>&#34;method:70,line:80,class:100&#34;</span>
-</span></span><span style=display:flex><span>                <span style=color:teal>depth=</span><span style=color:#d14>&#34;method&#34;</span>
-</span></span><span style=display:flex><span>                <span style=color:teal>columns=</span><span style=color:#d14>&#34;name,class,method,block,line&#34;</span>
-</span></span><span style=display:flex><span>                <span style=color:teal>encoding=</span><span style=color:#d14>&#34;UTF-8&#34;</span><span style=color:navy>&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;infileset</span> <span style=color:teal>dir=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage&#34;</span>
-</span></span><span style=display:flex><span>                       <span style=color:teal>includes=</span><span style=color:#d14>&#34;*.em, *.ec&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:#998;font-style:italic>&lt;!-- XML Report --&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;xml</span> <span style=color:teal>outfile=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage/coverage.xml&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:#998;font-style:italic>&lt;!-- Text Report --&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;txt</span> <span style=color:teal>outfile=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage/coverage.txt&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:#998;font-style:italic>&lt;!-- HTML Report --&gt;</span>
-</span></span><span style=display:flex><span>            <span style=color:navy>&lt;html</span> <span style=color:teal>outfile=</span><span style=color:#d14>&#34;${artifactsDir}/test-coverage/coverage.html&#34;</span> <span style=color:navy>/&gt;</span>
-</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/report&gt;</span>
-</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/emma&gt;</span>
-</span></span><span style=display:flex><span><span style=color:navy>&lt;/target&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;formatter</span> <span style=color:#1f2328>type=</span><span style=color:#0a3069>&#34;xml&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;batchtest</span> <span style=color:#1f2328>fork=</span><span style=color:#0a3069>&#34;yes&#34;</span> <span style=color:#1f2328>todir=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-results/xml&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;fileset</span> <span style=color:#1f2328>dir=</span><span style=color:#0a3069>&#34;${testbuild.dir}&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:#0550ae>&lt;include</span> <span style=color:#1f2328>name=</span><span style=color:#0a3069>&#34;**/*Test.class&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;/fileset&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/batchtest&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;/junit&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;/target&gt;</span>
+</span></span></code></pre></div></li><li>Test Coverage 리포트 생성<div class=highlight><pre tabindex=0 style=background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#57606a>&lt;!-- Test Code Coverage Report  --&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;target</span> <span style=color:#1f2328>name=</span><span style=color:#0a3069>&#34;emmareport&#34;</span> <span style=color:#1f2328>depends=</span><span style=color:#0a3069>&#34;test.with.emma&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;move</span> <span style=color:#1f2328>file=</span><span style=color:#0a3069>&#34;${basedir}/coverage.ec&#34;</span>
+</span></span><span style=display:flex><span>          <span style=color:#1f2328>todir=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;emma</span> <span style=color:#1f2328>description=</span><span style=color:#0a3069>&#34;now we can generate the emma report&#34;</span>
+</span></span><span style=display:flex><span>          <span style=color:#1f2328>enabled=</span><span style=color:#0a3069>&#34;${emma.enabled}&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;report</span> <span style=color:#1f2328>sourcepath=</span><span style=color:#0a3069>&#34;${src.dir}&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#1f2328>sort=</span><span style=color:#0a3069>&#34;+name,+method,+class&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#1f2328>metrics=</span><span style=color:#0a3069>&#34;method:70,line:80,class:100&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#1f2328>depth=</span><span style=color:#0a3069>&#34;method&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#1f2328>columns=</span><span style=color:#0a3069>&#34;name,class,method,block,line&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#1f2328>encoding=</span><span style=color:#0a3069>&#34;UTF-8&#34;</span><span style=color:#0550ae>&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;infileset</span> <span style=color:#1f2328>dir=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage&#34;</span>
+</span></span><span style=display:flex><span>                       <span style=color:#1f2328>includes=</span><span style=color:#0a3069>&#34;*.em, *.ec&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#57606a>&lt;!-- XML Report --&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;xml</span> <span style=color:#1f2328>outfile=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage/coverage.xml&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#57606a>&lt;!-- Text Report --&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;txt</span> <span style=color:#1f2328>outfile=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage/coverage.txt&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#57606a>&lt;!-- HTML Report --&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:#0550ae>&lt;html</span> <span style=color:#1f2328>outfile=</span><span style=color:#0a3069>&#34;${artifactsDir}/test-coverage/coverage.html&#34;</span> <span style=color:#0550ae>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:#0550ae>&lt;/report&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0550ae>&lt;/emma&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#0550ae>&lt;/target&gt;</span>
 </span></span></code></pre></div></li></ol><h3 class=sec-tit id=emma-html-리포트-샘플>EMMA HTML 리포트 샘플</h3><ul><li><a class="krds-btn medium text" href=/egovframe-docs/egovframe-development/test-tool/test-tool-ref/emma-test-report/ class=innerLink>EMMA에서 생성한 Test Coverage HTML 리포트의 샘플</a></li></ul></div><div class="conts-wrap section-link" id=section_06><h2 class=sec-tit id=참고자료>참고자료</h2><ul><li>EMMA Home :
 <a class="krds-btn medium text" href=http://emma.sourceforge.net/ target=_blank rel="noopener noreferrer" class=externalLink>http://emma.sourceforge.net/<i class="svg-icon ico-go"></i></a></li><li>EclEmma Home :
 <a class="krds-btn medium text" href=http://www.eclemma.org/ target=_blank rel="noopener noreferrer" class=externalLink>http://www.eclemma.org/<i class="svg-icon ico-go"></i></a></li><li>Maven EMMA plugin :
