@@ -45,7 +45,3 @@ temp/
 
 # 빌드 결과물
 public/
-
-# Python 캐시
-__pycache__/
-*.pyc
