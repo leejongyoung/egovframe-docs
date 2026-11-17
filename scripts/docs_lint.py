@@ -7,6 +7,7 @@ L2 broken-rel-link   : 상대링크 대상 파일 부재 (렌더링 사이트 �
 L3 frontmatter       : frontmatter 부재/title·url 누락 (README·docs/ 제외)
 L4 heading-level     : H1 부재 또는 레벨 건너뜀(h2→h4 등)
 L5 source-ref        : 관련소스 클래스 참조가 실제 저장소에 없음 (--src 로 소스 저장소 지정 시)
+L5-test              : 관련소스 클래스 참조가 src/test/java 에만 있음 (정보성)
 L5-name              : 문서에 쓴 Egov 클래스명이 --src 저장소들에 없음 (확인 권장)
 
 사용법: python3 docs_lint.py <docs-root> [--src <java-src-root>]... [--json]
@@ -63,11 +64,15 @@ def main():
     mds = [m for m in glob.glob(ROOT + '/**/*.md', recursive=True) if '/.git/' not in m]
 
     cls_index = set()
+    test_index = set()
     for src in SRCS:
         for p in glob.glob(src + '/**/*.java', recursive=True):
-            if '/main/' in p:
+            if '/src/main/java/' in p:
                 rel = p.split('/src/main/java/')[-1][:-5]
                 cls_index.add(rel.replace('/', '.'))
+            elif '/src/test/java/' in p:
+                rel = p.split('/src/test/java/')[-1][:-5]
+                test_index.add(rel.replace('/', '.'))
     simple_index = {c.split('.')[-1] for c in cls_index}
 
     for md in mds:
@@ -129,7 +134,10 @@ def main():
                 if ref not in cls_index and ref.split('.')[-1][0].isupper():
                     simple = ref.split('.')[-1]
                     if not any(c.endswith('.' + simple) for c in cls_index):
-                        findings.append((rel, 0, 'L5', '실소스 부재 참조: ' + ref))
+                        if ref in test_index:
+                            findings.append((rel, 0, 'L5-test', '테스트 소스에만 있는 참조: ' + ref))
+                        else:
+                            findings.append((rel, 0, 'L5', '실소스 부재 참조: ' + ref))
             # 백틱 없이 쓴 Egov 클래스명 — 한글 조사가 바로 붙어도 잡고, EgovXxx_SQL_mysql.xml·EgovXxx.jsp 같은 파일명 조각과 패키지 경로 안의 이름은 뺀다
             names = set(re.findall(r'(?<![A-Za-z0-9_./-])(Egov[A-Z][A-Za-z0-9]*)(?![A-Za-z0-9_/-]|\.(?:jsp|xml|js|css|html|properties|sql|vm|hbs|ts|tsx|md)\b)', body))
             for name in sorted(names - simple_index):
